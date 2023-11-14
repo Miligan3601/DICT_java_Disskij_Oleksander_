@@ -1,10 +1,14 @@
 package Hangman;
 
 import java.util.Scanner;
+import java.util.Random;
+
 public class hangman {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String secretWord = "java";
+        String[] wordList = {"python", "java", "javascript", "kotlin"};
+        Random random = new Random();
+        String secretWord = wordList[random.nextInt(wordList.length)];
 
         System.out.println("HANGMAN");
         System.out.print("Guess the word: > ");
