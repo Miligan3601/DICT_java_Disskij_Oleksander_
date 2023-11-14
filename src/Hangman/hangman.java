@@ -8,17 +8,34 @@ public class hangman {
         Scanner scanner = new Scanner(System.in);
         String[] wordList = {"python", "java", "javascript", "kotlin"};
         Random random = new Random();
-        String secretWord = wordList[random.nextInt(wordList.length)];
 
+        System.out.println("HANGMAN");
+        String userInput;
+        do {
+            System.out.println("Type \"play\" to play the game, \"exit\" to quit: > ");
+            userInput = scanner.nextLine().toLowerCase();
+
+            if (userInput.equals("play")) {
+                playGame(wordList, random);
+            } else if (!userInput.equals("exit")) {
+                System.out.println("Invalid input. Please try again.");
+            }
+        } while (!userInput.equals("exit"));
+
+        scanner.close();
+    }
+
+    private static void playGame(String[] wordList, Random random) {
+        String secretWord = wordList[random.nextInt(wordList.length)];
         int attemptsLeft = 8;
         boolean[] guessedLetters = new boolean[secretWord.length()];
         boolean wordGuessed = false;
         boolean[] alreadyGuessed = new boolean[26];
 
-        System.out.println("HANGMAN");
         while (attemptsLeft > 0 && !wordGuessed) {
             boolean letterGuessed = false;
             System.out.print(displayWord(secretWord, guessedLetters) + "\nInput a letter: > ");
+            Scanner scanner = new Scanner(System.in);
             String userInput = scanner.nextLine().toLowerCase();
 
             if (userInput.length() != 1) {
@@ -68,8 +85,6 @@ public class hangman {
         } else {
             System.out.println("You lost!");
         }
-
-        scanner.close();
     }
 
     private static String displayWord(String secretWord, boolean[] guessedLetters) {
