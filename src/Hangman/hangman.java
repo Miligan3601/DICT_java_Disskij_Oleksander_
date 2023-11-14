@@ -13,6 +13,7 @@ public class hangman {
         int attemptsLeft = 8;
         boolean[] guessedLetters = new boolean[secretWord.length()];
         boolean wordGuessed = false;
+        boolean[] alreadyGuessed = new boolean[26];
 
         System.out.println("HANGMAN");
         while (attemptsLeft > 0 && !wordGuessed) {
@@ -20,29 +21,52 @@ public class hangman {
             System.out.print(displayWord(secretWord, guessedLetters) + "\nInput a letter: > ");
             String userInput = scanner.nextLine().toLowerCase();
 
+            if (userInput.length() != 1) {
+                System.out.println("You should input a single letter");
+                continue;
+            }
+
             char userChar = userInput.charAt(0);
+            if (!Character.isLetter(userChar) || userChar < 'a' || userChar > 'z') {
+                System.out.println("Please enter a lowercase English letter");
+                continue;
+            }
+
+            if (alreadyGuessed[userChar - 'a']) {
+                System.out.println("You've already guessed this letter");
+                continue;
+            }
+
+            boolean improvement = false;
+            alreadyGuessed[userChar - 'a'] = true;
+
             for (int i = 0; i < secretWord.length(); i++) {
                 if (secretWord.charAt(i) == userChar && !guessedLetters[i]) {
                     guessedLetters[i] = true;
                     letterGuessed = true;
+                    improvement = true;
                 }
             }
 
             if (!letterGuessed) {
-                attemptsLeft--;
-                System.out.println("That letter doesn't appear in the word");
+                if (!improvement) {
+                    attemptsLeft--;
+                    System.out.println("That letter doesn't appear in the word");
+                } else {
+                    System.out.println("No improvements");
+                }
             }
 
             if (displayWord(secretWord, guessedLetters).equals(secretWord)) {
                 wordGuessed = true;
             }
         }
+
         if (wordGuessed) {
-            System.out.println("Thanks for playing!");
-            System.out.println("We'll see how well you did in the next stage");
+            System.out.println("You guessed the word " + secretWord + "!");
+            System.out.println("You survived!");
         } else {
-            System.out.println("You ran out of attempts!");
-            System.out.println("The word was: " + secretWord);
+            System.out.println("You lost!");
         }
 
         scanner.close();
