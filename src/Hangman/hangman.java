@@ -37,7 +37,6 @@ public class hangman {
                 wordGuessed = true;
             }
         }
-
         if (wordGuessed) {
             System.out.println("Thanks for playing!");
             System.out.println("We'll see how well you did in the next stage");
