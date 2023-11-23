@@ -26,20 +26,23 @@ public class CoffeeMachine {
     }
 
     public void buyCoffee(Scanner scanner) {
-        System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
-        int choice = scanner.nextInt();
-        switch (choice) {
-            case 1:
-                makeCoffee(250, 0, 16, 4);
-                break;
-            case 2:
-                makeCoffee(350, 75, 20, 7);
-                break;
-            case 3:
-                makeCoffee(200, 100, 12, 6);
-                break;
-            default:
-                break;
+        System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back – to main menu:");
+        String choice = scanner.next();
+        if (!choice.equals("back")) {
+            int type = Integer.parseInt(choice);
+            switch (type) {
+                case 1:
+                    makeCoffee(250, 0, 16, 4);
+                    break;
+                case 2:
+                    makeCoffee(350, 75, 20, 7);
+                    break;
+                case 3:
+                    makeCoffee(200, 100, 12, 6);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -52,18 +55,24 @@ public class CoffeeMachine {
             disposableCups--;
             money += cost;
         } else {
-            System.out.println("Sorry, not enough resources to make coffee.");
+            String msg = "Sorry, not enough ";
+            if (water < waterNeeded) msg += "water ";
+            if (milk < milkNeeded) msg += "milk ";
+            if (coffeeBeans < beansNeeded) msg += "coffee beans ";
+            if (disposableCups < 1) msg += "disposable cups ";
+            msg += "to make coffee.";
+            System.out.println(msg);
         }
     }
 
     public void fillIngredients(Scanner scanner) {
-        System.out.println("Write how many ml of water you want to add:");
+        System.out.println("Write how many ml of water do you want to add:");
         water += scanner.nextInt();
-        System.out.println("Write how many ml of milk you want to add:");
+        System.out.println("Write how many ml of milk do you want to add:");
         milk += scanner.nextInt();
-        System.out.println("Write how many grams of coffee beans you want to add:");
+        System.out.println("Write how many grams of coffee beans do you want to add:");
         coffeeBeans += scanner.nextInt();
-        System.out.println("Write how many disposable cups you want to add:");
+        System.out.println("Write how many disposable cups of coffee do you want to add:");
         disposableCups += scanner.nextInt();
     }
 
@@ -77,28 +86,29 @@ public class CoffeeMachine {
 
         CoffeeMachine machine = new CoffeeMachine(400, 540, 120, 9, 550);
 
-        System.out.println("The coffee machine has:");
-        machine.printStatus();
+        while (true) {
+            System.out.println("Write action (buy, fill, take, remaining, exit):");
+            String action = scanner.next();
 
-        System.out.println("Write action (buy, fill, take):");
-        String action = scanner.next();
-
-        switch (action) {
-            case "buy":
-                machine.buyCoffee(scanner);
-                break;
-            case "fill":
-                machine.fillIngredients(scanner);
-                break;
-            case "take":
-                machine.takeMoney();
-                break;
-            default:
-                break;
+            switch (action) {
+                case "buy":
+                    machine.buyCoffee(scanner);
+                    break;
+                case "fill":
+                    machine.fillIngredients(scanner);
+                    break;
+                case "take":
+                    machine.takeMoney();
+                    break;
+                case "remaining":
+                    machine.printStatus();
+                    break;
+                case "exit":
+                    scanner.close();
+                    return;
+                default:
+                    break;
+            }
         }
-        System.out.println("The coffee machine has:");
-        machine.printStatus();
-
-        scanner.close();
     }
 }
