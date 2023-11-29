@@ -1,21 +1,35 @@
 package TicTacToe;
+import java.util.Scanner;
 
 public class TicTacToe {
     public static void main(String[] args) {
-        // Оголошення двовимірного масиву для представлення поля гри
-        char[][] gameBoard = {
-                {'X', 'O', 'X'},
-                {'O', 'X', 'O'},
-                {'X', 'X', 'O'}
-        };
+        Scanner scanner = new Scanner(System.in);
 
-        // Виведення гри на екран
+        System.out.print("Enter cells: ");
+        String input = scanner.nextLine();
+
+        displayGameBoard(input);
+    }
+
+    public static void displayGameBoard(String input) {
+        char[][] gameBoard = new char[3][3];
+        int counter = 0;
+
         for (int i = 0; i < gameBoard.length; i++) {
             for (int j = 0; j < gameBoard[i].length; j++) {
-                System.out.print(gameBoard[i][j] + " ");
+                gameBoard[i][j] = input.charAt(counter++);
             }
-            System.out.println(); // Перехід на новий рядок після кожного рядка матриці
         }
+
+        System.out.println("---------");
+        for (char[] row : gameBoard) {
+            System.out.print("| ");
+            for (char cell : row) {
+                System.out.print(cell + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println("---------");
     }
     
 }
