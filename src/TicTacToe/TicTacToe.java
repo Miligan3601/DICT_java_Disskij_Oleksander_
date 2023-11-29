@@ -9,7 +9,7 @@ public class TicTacToe {
         String input = scanner.nextLine();
 
         displayGameBoard(input);
-        analyzeGameState(input);
+        playGame(input, scanner);
     }
 
     public static void displayGameBoard(String input) {
@@ -33,7 +33,7 @@ public class TicTacToe {
         System.out.println("---------");
     }
 
-    public static void analyzeGameState(String input) {
+    public static void playGame(String input, Scanner scanner) {
         char[][] gameBoard = new char[3][3];
         int counter = 0;
 
@@ -43,62 +43,43 @@ public class TicTacToe {
             }
         }
 
-        boolean xWins = checkWin(gameBoard, 'X');
-        boolean oWins = checkWin(gameBoard, 'O');
-        boolean impossible = checkImpossible(gameBoard);
-        boolean draw = checkDraw(gameBoard);
+        int row, col;
+        boolean validInput = false;
+        while (!validInput) {
+            System.out.print("Enter the coordinates: ");
+            if (scanner.hasNextInt()) {
+                row = scanner.nextInt();
+                col = scanner.nextInt();
 
-        if (impossible) {
-            System.out.println("Impossible");
-        } else if (xWins) {
-            System.out.println("X wins");
-        } else if (oWins) {
-            System.out.println("O wins");
-        } else if (draw) {
-            System.out.println("Draw");
-        } else {
-            System.out.println("Game not finished");
-        }
-    }
-
-    public static boolean checkWin(char[][] gameBoard, char symbol) {
-        for (int i = 0; i < 3; i++) {
-            if ((gameBoard[i][0] == symbol && gameBoard[i][1] == symbol && gameBoard[i][2] == symbol) ||
-                    (gameBoard[0][i] == symbol && gameBoard[1][i] == symbol && gameBoard[2][i] == symbol)) {
-                return true;
-            }
-        }
-        return (gameBoard[0][0] == symbol && gameBoard[1][1] == symbol && gameBoard[2][2] == symbol) ||
-                (gameBoard[0][2] == symbol && gameBoard[1][1] == symbol && gameBoard[2][0] == symbol);
-    }
-
-    public static boolean checkImpossible(char[][] gameBoard) {
-        int countX = 0;
-        int countO = 0;
-
-        for (char[] row : gameBoard) {
-            for (char cell : row) {
-                if (cell == 'X') {
-                    countX++;
-                } else if (cell == 'O') {
-                    countO++;
+                if (row >= 1 && row <= 3 && col >= 1 && col <= 3) {
+                    if (gameBoard[3 - col][row - 1] == '_') {
+                        gameBoard[3 - col][row - 1] = 'X';
+                        validInput = true;
+                    } else {
+                        System.out.println("This cell is occupied! Choose another one!");
+                    }
+                } else {
+                    System.out.println("Coordinates should be from 1 to 3!");
                 }
+            } else {
+                System.out.println("You should enter numbers!");
+                scanner.next(); 
             }
         }
 
-        int diff = Math.abs(countX - countO);
-        return diff >= 2 || (checkWin(gameBoard, 'X') && checkWin(gameBoard, 'O'));
+        displayUpdatedGameBoard(gameBoard);
     }
 
-    public static boolean checkDraw(char[][] gameBoard) {
+    public static void displayUpdatedGameBoard(char[][] gameBoard) {
+        System.out.println("---------");
         for (char[] row : gameBoard) {
+            System.out.print("| ");
             for (char cell : row) {
-                if (cell == '_') {
-                    return false;
-                }
+                System.out.print(cell + " ");
             }
+            System.out.println("|");
         }
-        return !checkWin(gameBoard, 'X') && !checkWin(gameBoard, 'O');
+        System.out.println("---------");
     }
     
 }
