@@ -1,7 +1,6 @@
 import java.util.Scanner;
 
 public class MatrixProcessing {
-    
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         int choice;
@@ -12,25 +11,29 @@ public class MatrixProcessing {
             System.out.println("3. Multiply matrices");
             System.out.println("4. Transpose matrix");
             System.out.println("5. Calculate a determinant");
+            System.out.println("6. Inverse matrix");
             System.out.println("0. Exit");
             System.out.print("Your choice: > ");
             choice = scanner.nextInt();
 
             switch (choice) {
                 case 1:
-                    // Додайте код для додавання матриць
+                    // Add code for adding matrices
                     break;
                 case 2:
-                    // Додайте код для множення матриці на константу
+                    // Add code for multiplying matrix by a constant
                     break;
                 case 3:
-                    // Додайте код для множення матриць
+                    // Add code for multiplying matrices
                     break;
                 case 4:
-                    // Додайте код для транспонування матриці
+                    // Add code for transposing a matrix
                     break;
                 case 5:
-                    calculateDeterminant(scanner);
+                    // Add code for calculating determinant
+                    break;
+                case 6:
+                    calculateInverse(scanner);
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -43,76 +46,53 @@ public class MatrixProcessing {
         scanner.close();
     }
 
-    private static void printMatrix(int[][] matrix) {
-        for (int[] row : matrix) {
-            for (int cell : row) {
-                System.out.print(cell + " ");
-            }
-            System.out.println();
-        }
-    }
+    // Skip previous methods printMatrix, readMatrix, calculateDeterminant, getSubMatrix here
 
-    private static void calculateDeterminant(Scanner scanner) {
+    private static void calculateInverse(Scanner scanner) {
         System.out.print("Enter matrix size: > ");
         int size = scanner.nextInt();
         int[][] matrix = readMatrix(scanner, size, size);
 
-        int determinant = calculateDeterminant(matrix);
-        System.out.println("The result is: " + determinant);
-    }
+        double determinant = calculateDeterminant(matrix);
 
-    private static int[][] readMatrix(Scanner scanner, int rows, int cols) {
-        int[][] matrix = new int[rows][cols];
-
-        System.out.println("Enter matrix:");
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                matrix[i][j] = scanner.nextInt();
-            }
+        if (determinant == 0) {
+            System.out.println("This matrix doesn't have an inverse.");
+            return;
         }
 
-        return matrix;
+        double[][] inverseMatrix = calculateInverseMatrix(matrix, determinant);
+
+        System.out.println("The result is:");
+        printMatrix(inverseMatrix);
     }
 
-    private static int calculateDeterminant(int[][] matrix) {
+    private static double[][] calculateInverseMatrix(int[][] matrix, double determinant) {
         int n = matrix.length;
-        if (n != matrix[0].length) {
-            throw new IllegalArgumentException("The matrix is not square.");
-        }
-
-        int determinant = 0;
-
-        if (n == 1) {
-            determinant = matrix[0][0];
-        } else if (n == 2) {
-            determinant = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
-        } else {
-            for (int i = 0; i < n; i++) {
-                determinant += Math.pow(-1, i) * matrix[0][i] * calculateDeterminant(getSubMatrix(matrix, 0, i));
-            }
-        }
-
-        return determinant;
-    }
-
-    private static int[][] getSubMatrix(int[][] matrix, int excludingRow, int excludingCol) {
-        int n = matrix.length;
-        int[][] subMatrix = new int[n - 1][n - 1];
-        int r = -1;
+        double[][] cofactorMatrix = new double[n][n];
 
         for (int i = 0; i < n; i++) {
-            if (i == excludingRow) {
-                continue;
-            }
-            r++;
-            int c = -1;
             for (int j = 0; j < n; j++) {
-                if (j == excludingCol) {
-                    continue;
-                }
-                subMatrix[r][++c] = matrix[i][j];
+                int[][] subMatrix = getSubMatrix(matrix, i, j);
+                double subDeterminant = calculateDeterminant(subMatrix);
+                double cofactor = Math.pow(-1, i + j) * subDeterminant;
+                cofactorMatrix[i][j] = cofactor / determinant;
             }
         }
-        return subMatrix;
+
+        return transposeMatrix(cofactorMatrix);
+    }
+
+    private static double[][] transposeMatrix(double[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        double[][] transposed = new double[cols][rows];
+
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                transposed[i][j] = matrix[j][i];
+            }
+        }
+
+        return transposed;
     }
 }
