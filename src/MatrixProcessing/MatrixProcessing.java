@@ -11,6 +11,7 @@ public class MatrixProcessing {
             System.out.println("2. Multiply matrix by a constant");
             System.out.println("3. Multiply matrices");
             System.out.println("4. Transpose matrix");
+            System.out.println("5. Calculate a determinant");
             System.out.println("0. Exit");
             System.out.print("Your choice: > ");
             choice = scanner.nextInt();
@@ -26,7 +27,10 @@ public class MatrixProcessing {
                     // Додайте код для множення матриць
                     break;
                 case 4:
-                    transposeMenu(scanner);
+                    // Додайте код для транспонування матриці
+                    break;
+                case 5:
+                    calculateDeterminant(scanner);
                     break;
                 case 0:
                     System.out.println("Exiting...");
@@ -35,11 +39,10 @@ public class MatrixProcessing {
                     System.out.println("Invalid choice. Please enter a valid option.");
             }
         } while (choice != 0);
-        
+
         scanner.close();
     }
 
-    // Метод для виведення матриці на екран
     private static void printMatrix(int[][] matrix) {
         for (int[] row : matrix) {
             for (int cell : row) {
@@ -49,106 +52,16 @@ public class MatrixProcessing {
         }
     }
 
-    // Метод для транспонування матриці за головною діагоналлю
-    private static void transposeMainDiagonal(int[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int[][] transposedMatrix = new int[cols][rows];
-
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                transposedMatrix[i][j] = matrix[j][i];
-            }
-        }
-
-        System.out.println("The result is:");
-        printMatrix(transposedMatrix);
-    }
-
-    // Метод для транспонування матриці за побічною діагоналлю
-    private static void transposeSideDiagonal(int[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int[][] transposedMatrix = new int[cols][rows];
-
-        for (int i = 0; i < cols; i++) {
-            for (int j = 0; j < rows; j++) {
-                transposedMatrix[cols - 1 - i][rows - 1 - j] = matrix[j][i];
-            }
-        }
-
-        System.out.println("The result is:");
-        printMatrix(transposedMatrix);
-    }
-
-    // Метод для транспонування матриці за вертикаллю
-    private static void transposeVertical(int[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int[][] transposedMatrix = new int[rows][cols];
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                transposedMatrix[i][cols - 1 - j] = matrix[i][j];
-            }
-        }
-
-        System.out.println("The result is:");
-        printMatrix(transposedMatrix);
-    }
-
-    // Метод для транспонування матриці за горизонталлю
-    private static void transposeHorizontal(int[][] matrix) {
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int[][] transposedMatrix = new int[rows][cols];
-
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                transposedMatrix[rows - 1 - i][j] = matrix[i][j];
-            }
-        }
-
-        System.out.println("The result is:");
-        printMatrix(transposedMatrix);
-    }
-
-    // Метод для вибору типу транспонування
-    private static void transposeMenu(Scanner scanner) {
-        int choice;
-
-        do {
-            System.out.println("1. Main diagonal");
-            System.out.println("2. Side diagonal");
-            System.out.println("3. Vertical line");
-            System.out.println("4. Horizontal line");
-            System.out.print("Your choice: > ");
-            choice = scanner.nextInt();
-
-            switch (choice) {
-                case 1:
-                    transposeMainDiagonal(readMatrix(scanner));
-                    break;
-                case 2:
-                    transposeSideDiagonal(readMatrix(scanner));
-                    break;
-                case 3:
-                    transposeVertical(readMatrix(scanner));
-                    break;
-                case 4:
-                    transposeHorizontal(readMatrix(scanner));
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please enter a valid option.");
-            }
-        } while (choice < 1 || choice > 4);
-    }
-
-    // Метод для зчитування матриці з консолі
-    private static int[][] readMatrix(Scanner scanner) {
+    private static void calculateDeterminant(Scanner scanner) {
         System.out.print("Enter matrix size: > ");
-        int rows = scanner.nextInt();
-        int cols = scanner.nextInt();
+        int size = scanner.nextInt();
+        int[][] matrix = readMatrix(scanner, size, size);
+
+        int determinant = calculateDeterminant(matrix);
+        System.out.println("The result is: " + determinant);
+    }
+
+    private static int[][] readMatrix(Scanner scanner, int rows, int cols) {
         int[][] matrix = new int[rows][cols];
 
         System.out.println("Enter matrix:");
@@ -159,5 +72,47 @@ public class MatrixProcessing {
         }
 
         return matrix;
+    }
+
+    private static int calculateDeterminant(int[][] matrix) {
+        int n = matrix.length;
+        if (n != matrix[0].length) {
+            throw new IllegalArgumentException("The matrix is not square.");
+        }
+
+        int determinant = 0;
+
+        if (n == 1) {
+            determinant = matrix[0][0];
+        } else if (n == 2) {
+            determinant = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+        } else {
+            for (int i = 0; i < n; i++) {
+                determinant += Math.pow(-1, i) * matrix[0][i] * calculateDeterminant(getSubMatrix(matrix, 0, i));
+            }
+        }
+
+        return determinant;
+    }
+
+    private static int[][] getSubMatrix(int[][] matrix, int excludingRow, int excludingCol) {
+        int n = matrix.length;
+        int[][] subMatrix = new int[n - 1][n - 1];
+        int r = -1;
+
+        for (int i = 0; i < n; i++) {
+            if (i == excludingRow) {
+                continue;
+            }
+            r++;
+            int c = -1;
+            for (int j = 0; j < n; j++) {
+                if (j == excludingCol) {
+                    continue;
+                }
+                subMatrix[r][++c] = matrix[i][j];
+            }
+        }
+        return subMatrix;
     }
 }
