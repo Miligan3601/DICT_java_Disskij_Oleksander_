@@ -5,30 +5,26 @@ public class MatrixProcessing {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter matrix A:");
-        int[][] matrixA = readMatrix(scanner);
-        int rowsA = matrixA.length;
-        int colsA = matrixA[0].length;
-
-        System.out.println("Enter matrix B:");
-        int[][] matrixB = readMatrix(scanner);
-        int rowsB = matrixB.length;
-        int colsB = matrixB[0].length;
-
-        if (rowsA == rowsB && colsA == colsB) {
-            int[][] resultMatrix = addMatrices(matrixA, matrixB);
-            System.out.println("Output:");
-            printMatrix(resultMatrix);
-        } else {
-            System.out.println("ERROR");
-        }
-    }
-
-    public static int[][] readMatrix(Scanner scanner) {
+        // Зчитуємо розміри матриці
         int rows = scanner.nextInt();
         int cols = scanner.nextInt();
-        int[][] matrix = new int[rows][cols];
 
+        // Зчитуємо матрицю
+        int[][] matrix = readMatrix(scanner, rows, cols);
+
+        // Зчитуємо константу
+        int constant = scanner.nextInt();
+
+        // Множимо матрицю на константу
+        int[][] resultMatrix = multiplyByConstant(matrix, constant);
+
+        // Виводимо результат множення
+        printMatrix(resultMatrix);
+    }
+
+    // Метод для зчитування матриці з введення
+    private static int[][] readMatrix(Scanner scanner, int rows, int cols) {
+        int[][] matrix = new int[rows][cols];
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 matrix[i][j] = scanner.nextInt();
@@ -37,23 +33,28 @@ public class MatrixProcessing {
         return matrix;
     }
 
-    public static int[][] addMatrices(int[][] matrixA, int[][] matrixB) {
-        int rows = matrixA.length;
-        int cols = matrixA[0].length;
+    // Метод для множення матриці на константу
+    private static int[][] multiplyByConstant(int[][] matrix, int constant) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
         int[][] resultMatrix = new int[rows][cols];
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                resultMatrix[i][j] = matrixA[i][j] + matrixB[i][j];
+                resultMatrix[i][j] = matrix[i][j] * constant;
             }
         }
         return resultMatrix;
     }
 
-    public static void printMatrix(int[][] matrix) {
-        for (int[] row : matrix) {
-            for (int cell : row) {
-                System.out.print(cell + " ");
+    // Метод для виведення матриці
+    private static void printMatrix(int[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                System.out.print(matrix[i][j] + " ");
             }
             System.out.println();
         }
