@@ -2,64 +2,94 @@ import java.util.Scanner;
 
 public class CreditCalculator {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("What do you want to calculate?");
-        System.out.println("type 'n' for number of monthly payments,");
-        System.out.println("type 'a' for annuity monthly payment amount,");
-        System.out.println("type 'p' for loan principal:");
-        String calculationType = scanner.nextLine();
-
-        double principal = 0;
-        double payment = 0;
-        double periods = 0;
-        double interest = 0;
-
-        switch (calculationType) {
-            case "n":
-                System.out.println("Enter the loan principal:");
-                principal = Double.parseDouble(scanner.nextLine());
-                System.out.println("Enter the monthly payment:");
-                payment = Double.parseDouble(scanner.nextLine());
-                System.out.println("Enter the loan interest:");
-                interest = Double.parseDouble(scanner.nextLine());
-
-                double i = interest / (12 * 100);
-                periods = Math.log(payment / (payment - i * principal)) / Math.log(1 + i);
-                int years = (int) periods / 12;
-                int months = (int) periods % 12;
-                System.out.println("It will take " + years + " years and " + months + " months to repay this loan!");
-                break;
-            case "a":
-                System.out.println("Enter the loan principal:");
-                principal = Double.parseDouble(scanner.nextLine());
-                System.out.println("Enter the number of periods:");
-                periods = Double.parseDouble(scanner.nextLine());
-                System.out.println("Enter the loan interest:");
-                interest = Double.parseDouble(scanner.nextLine());
-
-                i = interest / (12 * 100);
-                payment = principal * (i * Math.pow(1 + i, periods)) / (Math.pow(1 + i, periods) - 1);
-                System.out.println("Your monthly payment = " + (int) payment + "!");
-                break;
-            case "p":
-                System.out.println("Enter the annuity payment:");
-                payment = Double.parseDouble(scanner.nextLine());
-                System.out.println("Enter the number of periods:");
-                periods = Double.parseDouble(scanner.nextLine());
-                System.out.println("Enter the loan interest:");
-                interest = Double.parseDouble(scanner.nextLine());
-
-                i = interest / (12 * 100);
-                principal = payment * (Math.pow(1 + i, periods) - 1) / (i * Math.pow(1 + i, periods));
-                System.out.println("Your loan principal = " + (int) principal + "!");
-                break;
-            default:
-                System.out.println("Invalid calculation type!");
-                break;
+        
+        double principal = -1;
+        int months = -1;
+        double interest = -1;
+        
+        if(args.length < 4) {
+            System.out.println("Incorrect parameters");
+            return;
         }
-
-        scanner.close();
+        
+        for(String arg : args) {
+            String[] parts = arg.split("=");
+            if (parts.length != 2) {
+                System.out.println("Incorrect parameters");
+                return; 
+            }
+            
+            String param = parts[0];
+            String value = parts[1];
+            
+            if (param.equals("--type")) {
+                if (!value.equals("annuity") && !value.equals("diff")) {
+                    System.out.println("Incorrect parameters");
+                    return;
+                }
+            }
+            else if (param.equals("--payment")) {
+                if (value.equals("diff")) {
+                    System.out.println("Incorrect parameters");
+                    return;
+                } 
+            }
+            else if (param.equals("--principal")) {
+                principal = Double.parseDouble(value);
+                if(principal < 0) {
+                    System.out.println("Incorrect parameters");
+                    return;
+                }
+            }
+            else if (param.equals("--periods")) {
+                months = Integer.parseInt(value);
+                if(months < 0) {
+                    System.out.println("Incorrect parameters"); 
+                    return;
+                }
+            }
+            else if (param.equals("--interest")) {
+                interest = Double.parseDouble(value); 
+            }
+        }
+        
+        if(principal < 0 || months < 0 || interest < 0) {
+            System.out.println("Incorrect parameters");
+            return;
+        }
+        
+        if(args[0].split("=")[1].equals("annuity")) {
+            calculateAnnuity(principal, months, interest);
+        }
+        else { 
+            calculateDifferentiated(principal, months, interest);
+        }
+    }
+    
+    public static void calculateAnnuity(double principal, int months, double interest) {
+        
+        double monthlyRate = interest / 1200; 
+        double payment = principal * (monthlyRate + (monthlyRate / 
+                ((Math.pow(1 + monthlyRate, months) - 1))));
+                
+        System.out.println("Your monthly payment = " + (int)payment + "!"); 
+    }
+    
+    public static void calculateDifferentiated(double principal, int months, double interest) {
+     
+        double totalPaid = 0;
+        for(int month = 1; month <= months; month++) {
+            double monthlyRate = interest / 1200;
+            double paid = (principal / months) + monthlyRate * (principal - 
+                    (principal * (month - 1)) / months);
+                     
+            totalPaid += paid;           
+            System.out.println("Month " + month + ": payment is " + (int)paid);    
+        }
+        
+        double overpayment = totalPaid - principal;
+        
+        System.out.println("Overpayment = " + (int)overpayment);
     }
 }
 
